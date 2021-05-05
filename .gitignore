@@ -3,3 +3,5 @@ kotlin.docset/Contents/Resources/Documents/
 kotlin.docset/Contents/Resources/docSet.dsidx
 *.pyc
 .vscode/
+/venv/
+/.idea/
