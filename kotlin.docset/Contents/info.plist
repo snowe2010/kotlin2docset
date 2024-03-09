@@ -12,5 +12,9 @@
 	<string>api/latest/jvm/stdlib/index.html</string>
 	<key>isDashDocset</key>
 	<true/>
+	<key>DashDocSetFamily</key>
+    <string>dashtoc</string>
+    <key>DashDocSetFallbackURL</key>
+    <string>https://kotlinlang.org/</string>
 </dict>
 </plist>
