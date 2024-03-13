@@ -172,27 +172,24 @@ class KotlinWebDocParser:
                     self.parse_file(os.path.join(dirpath, page))
 
     def parse_file(self, file_path: str):
-        print("parsing file " + file_path)
+        # print("parsing file " + file_path)
         with open(file_path) as page:
             soup = BeautifulSoup(page.read(), features='html.parser')
 
             self.add_toc(soup)
 
-            # for section in soup.find_all('h3', attrs={'id': 'properties'})
-            # for node in soup.find_all('div', attrs={'class': ['node-page-main', 'overload-group']}):
-            #     signature = node.find('div', attrs={'class': 'signature'})
-            #     if signature:
-            #         # print("signature is : " + signature.text.strip())
-            #         code_type = self.parse_code_type(signature.text.strip())
-            #         # print("code type is : " + code_type)
-            #         name_dom = soup.find('div', attrs={'class': 'api-docs-breadcrumbs'})
-            #         # print("name dom is : " + name_dom)
-            #         name = '.'.join(map(lambda string: string.strip(), name_dom.text.split('/')[2::]))
-            #         # print("name is : " + name)
-            #         path = file_path.replace('kotlin.docset/Contents/Resources/Documents/', '')
-            #         if code_type is not None and name:
-            #             self.database.insert_into_index(name, code_type, path)
-            #             print('%s -> %s -> %s' % (name, code_type, path))
+            self.remove_header(soup)
+
+            for node in soup.find_all('div', attrs={'class': ['node-page-main', 'overload-group']}):
+                signature = node.find('div', attrs={'class': 'signature'})
+                if signature:
+                    code_type = self.parse_code_type(signature.text.strip())
+                    name_dom = soup.find('div', attrs={'class': 'api-docs-breadcrumbs'})
+                    name = '.'.join(map(lambda string: string.strip(), name_dom.text.split('/')[2::]))
+                    path = file_path.replace('kotlin.docset/Contents/Resources/Documents/', '')
+                    if code_type is not None and name:
+                        self.database.insert_into_index(name, code_type, path)
+                        # print('%s -> %s -> %s' % (name, code_type, path))
 
         # Now, overwrite the original file with the modified soup
         with open(file_path, 'w') as file:
@@ -205,7 +202,7 @@ class KotlinWebDocParser:
             for docset_link in docset_links:
                 docset_link.decompose()
             section_name = section.text.strip()
-            print("Found section with text {}".format(section_name))
+            # print("Found section with text {}".format(section_name))
             new_tag = soup.new_tag("a",
                                    attrs={'class': 'dashAnchor', 'name': f"//apple_ref/cpp/Section/{section_name}"})
             section.append(new_tag)
@@ -219,7 +216,7 @@ class KotlinWebDocParser:
                     mapped_section = "Field"
                 else:
                     mapped_section = mapping_dict[section_name]
-                print("mapping {} to {}".format(header_text, mapped_section))
+                # print("mapping {} to {}".format(header_text, mapped_section))
                 old_elements = element_header.find_all("a", attrs={'class': 'dashAnchor'})
                 for old_element in old_elements:
                     old_element.decompose()
@@ -273,8 +270,15 @@ class KotlinWebDocParser:
         files = glob.glob(os.path.join(self.local_path, '_assets/common.css*'))
 
         for file_path in files:
+            print("Adding custom css file: {}".format(file_path))
             with open(file_path, 'r') as file:
+                # print("doesn't have content")
                 content = file.read()
             if css not in content:
+                # print("Adding custom css")
                 with open(file_path, 'a') as file:
                     file.write(css)
+
+    def remove_header(self, soup):
+        header = soup.find('header')
+        header.decompose()
