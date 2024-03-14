@@ -14,5 +14,7 @@
 	<true/>
 	<key>DashDocSetFamily</key>
     <string>dashtoc</string>
+    <key>DashDocSetFallbackURL</key>
+    <string>https://kotlinlang.org/</string>
 </dict>
 </plist>
