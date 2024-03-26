@@ -18,10 +18,12 @@ if __name__ == '__main__':
     web_parser.mirror_website()
     web_parser.parse()
     web_parser.add_custom_css()
+    web_parser.fix_test_link()
 
     web_parser2: KotlinWebDocParser = KotlinWebDocParser(TEST_URL, DOCSET_TEST_DOCUMENT_PATH, sqlite_connection)
     web_parser2.mirror_website()
     web_parser2.parse()
     web_parser2.add_custom_css()
+    web_parser.fix_stdlib_link()
 
     sqlite_connection.commit_and_close()

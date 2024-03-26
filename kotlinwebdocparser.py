@@ -279,6 +279,44 @@ class KotlinWebDocParser:
                 with open(file_path, 'a') as file:
                     file.write(css)
 
+    def fix_test_link(self):
+        """
+        Fix the index.html link to the test library
+
+        This function searches for that file, then modifies the link to be to the local file, instead of the
+        kotlin website
+        :param index:
+        :return:
+        """
+        index = "kotlin.docset/Contents/Resources/Documents/stdlib/api/latest/jvm/stdlib/index.html"
+        with open(index) as page:
+            soup = BeautifulSoup(page.read(), features='html.parser')
+
+            for node in soup.find_all('a', attrs={'href': 'https://kotlinlang.org/api/latest/kotlin.test/index.html'}):
+                node['href'] = "../../../../../test/api/latest/kotlin.test/index.html"
+
+        with open(index, 'w') as file:
+            file.write(str(soup.prettify()))
+
+    def fix_stdlib_link(self):
+        """
+        Fix the index.html link to the stdlib library
+
+        This function searches for that file, then modifies the link to be to the local file, instead of the
+        kotlin website
+        :param index:
+        :return:
+        """
+        index = "kotlin.docset/Contents/Resources/Documents/test/api/latest/kotlin.test/index.html"
+        with open(index) as page:
+            soup = BeautifulSoup(page.read(), features='html.parser')
+
+            for node in soup.find_all('a', attrs={'href': 'https://kotlinlang.org/api/latest/jvm/stdlib/index.html'}):
+                node['href'] = "../../../../stdlib/api/latest/jvm/stdlib/index.html"
+
+        with open(index, 'w') as file:
+            file.write(str(soup.prettify()))
+
     def remove_header(self, soup):
         header = soup.find('header')
         header.decompose()
